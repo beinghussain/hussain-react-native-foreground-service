@@ -140,18 +140,6 @@ class NotificationHelper {
         notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
 
 
-        String largeIconName = bundle.getString("largeIcon");
-        if(largeIconName == null){
-            largeIconName = "ic_launcher";
-        }
-
-        int largeIconResId = getResourceIdForResourceName(context, largeIconName);
-        Bitmap largeIconBitmap = BitmapFactory.decodeResource(context.getResources(), largeIconResId);
-
-        if (largeIconResId != 0) {
-            notificationBuilder.setLargeIcon(largeIconBitmap);
-        }
-
         String numberString = bundle.getString("number");
         if (numberString != null) {
             int numberInt = Integer.parseInt(numberString);
