@@ -116,6 +116,7 @@ class NotificationHelper {
             .setContentTitle(title)
             .setVisibility(visibility)
             .setPriority(priority)
+            .setShowWhen(false)
             .setContentIntent(pendingIntent)
             .setOngoing(bundle.getBoolean("ongoing", false))
             .setContentText(bundle.getString("message"));
@@ -132,7 +133,7 @@ class NotificationHelper {
 
 
         String iconName = bundle.getString("icon");
-        
+
         if(iconName == null){
             iconName = "ic_notification";
         }
