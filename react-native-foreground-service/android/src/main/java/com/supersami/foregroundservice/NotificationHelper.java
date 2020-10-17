@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.core.app.NotificationCompat;
+
 import android.util.Log;
 
 
@@ -35,7 +37,7 @@ class NotificationHelper {
     }
 
     private NotificationHelper(Context context) {
-        mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         this.context = context;
         this.config = new NotificationConfig(context);
     }
@@ -52,11 +54,11 @@ class NotificationHelper {
         }
 
         Intent notificationIntent = new Intent(context, mainActivityClass);
-        notificationIntent.putExtra("mainOnPress",bundle.getString("mainOnPress"));
+        notificationIntent.putExtra("mainOnPress", bundle.getString("mainOnPress"));
         int uniqueInt1 = (int) (System.currentTimeMillis() & 0xfffffff);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, uniqueInt1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if(bundle.getBoolean("button", false) == true) {
+        if (bundle.getBoolean("button", false) == true) {
             Log.d("SuperLog C ", "inButtonOnPress" + bundle.getString("buttonOnPress"));
             Intent notificationBtnIntent = new Intent(context, mainActivityClass);
             notificationBtnIntent.putExtra("buttonOnPress", bundle.getString("buttonOnPress"));
@@ -70,7 +72,7 @@ class NotificationHelper {
         final String priorityString = bundle.getString("importance");
 
         if (priorityString != null) {
-            switch(priorityString.toLowerCase()) {
+            switch (priorityString.toLowerCase()) {
                 case "max":
                     priority = NotificationCompat.PRIORITY_MAX;
                     break;
@@ -95,7 +97,7 @@ class NotificationHelper {
         String visibilityString = bundle.getString("visibility");
 
         if (visibilityString != null) {
-            switch(visibilityString.toLowerCase()) {
+            switch (visibilityString.toLowerCase()) {
                 case "private":
                     visibility = NotificationCompat.VISIBILITY_PRIVATE;
                     break;
@@ -113,16 +115,18 @@ class NotificationHelper {
         checkOrCreateChannel(mNotificationManager, bundle);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle(title)
-            .setVisibility(visibility)
-            .setPriority(priority)
-            .setShowWhen(false)
-            .setContentIntent(pendingIntent)
-            .setOngoing(bundle.getBoolean("ongoing", false))
-            .setContentText(bundle.getString("message"));
-       if(bundle.getBoolean("button", false) == true){
-           notificationBuilder.addAction(R.drawable.redbox_top_border_background, bundle.getString("buttonText", "Button"), pendingBtnIntent);
-       }
+                .setContentTitle(title)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setShowWhen(false)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_SYSTEM)
+                .setOngoing(bundle.getBoolean("ongoing", false))
+                .setContentText(bundle.getString("message"));
+        if (bundle.getBoolean("button", false) == true) {
+            notificationBuilder.addAction(R.drawable.redbox_top_border_background, bundle.getString("buttonText", "Button"), pendingBtnIntent);
+        }
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -134,7 +138,7 @@ class NotificationHelper {
 
         String iconName = bundle.getString("icon");
 
-        if(iconName == null){
+        if (iconName == null) {
             iconName = "ic_notification";
         }
         notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
@@ -143,7 +147,7 @@ class NotificationHelper {
         String numberString = bundle.getString("number");
         if (numberString != null) {
             int numberInt = Integer.parseInt(numberString);
-            if(numberInt > 0){
+            if (numberInt > 0) {
                 notificationBuilder.setNumber(numberInt);
             }
         }
@@ -175,6 +179,7 @@ class NotificationHelper {
     }
 
     private static boolean channelCreated = false;
+
     private void checkOrCreateChannel(NotificationManager manager, Bundle bundle) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             return;
@@ -183,38 +188,8 @@ class NotificationHelper {
         if (manager == null)
             return;
 
-        int importance = NotificationManager.IMPORTANCE_HIGH;
-        final String importanceString = bundle.getString("importance");
 
-        if (importanceString != null) {
-            switch(importanceString.toLowerCase()) {
-                case "default":
-                    importance = NotificationManager.IMPORTANCE_DEFAULT;
-                    break;
-                case "max":
-                    importance = NotificationManager.IMPORTANCE_MAX;
-                    break;
-                case "high":
-                    importance = NotificationManager.IMPORTANCE_HIGH;
-                    break;
-                case "low":
-                    importance = NotificationManager.IMPORTANCE_LOW;
-                    break;
-                case "min":
-                    importance = NotificationManager.IMPORTANCE_MIN;
-                    break;
-                case "none":
-                    importance = NotificationManager.IMPORTANCE_NONE;
-                    break;
-                case "unspecified":
-                    importance = NotificationManager.IMPORTANCE_UNSPECIFIED;
-                    break;
-                default:
-                    importance = NotificationManager.IMPORTANCE_HIGH;
-            }
-        }
-        Log.d("Check ", ""+bundle.getBoolean("vibration"));
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, this.config.getChannelName(), importance);
+        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, this.config.getChannelName(), NotificationManager.IMPORTANCE_LOW);
         channel.setDescription(this.config.getChannelDescription());
         channel.enableLights(true);
         channel.enableVibration(bundle.getBoolean("vibration"));
